@@ -7,7 +7,9 @@
         </div>
     </div>
 
-    <div id="element" style="display: none; mt-3">
+    <div id="element" style="display: none;">
+        <div id="success" class="alert alert-success mt-5" style="display: none;">Payment was Successful!</div>
+
         <p id="error" style="color: red; font-size: 12px;"></p>
 
         <div class="field-container">
@@ -24,10 +26,6 @@
         </div>
         <button class="button mt-5" id="submit" onclick="submitPayment()">Submit</button>
     </div>
-    
-    <p id="success" style="display: none;">Payment Successful!</p>
-
-
 </div>
 
 
@@ -61,7 +59,8 @@
         })
             .then((response) => {
                 document.getElementById("success").style.display = "block";
-                window.alert(JSON.stringify(response));
+                alert("Payment is succcessful");
+                window.location.reload();
             })
             .catch((response) => {
                 document.getElementById("error").style.display = "block";
@@ -106,10 +105,11 @@
             if (elementsCompleted.hasOwnProperty(type)) {
                 elementsCompleted[type] = complete;
             }
-
+                        
             var allElementsCompleted = !Object.values(
                 elementsCompleted
             ).includes(false);
+
             document.getElementById("submit").disabled = !allElementsCompleted;
         });
     });
