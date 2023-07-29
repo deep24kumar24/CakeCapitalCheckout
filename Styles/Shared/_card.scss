@@ -1,0 +1,29 @@
+﻿.Card {
+    border: 1px solid var(--border-color);
+    width: 100px;
+    margin-right: 10px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+
+    svg {
+        height: 18px;
+        margin-bottom: 4px;
+        fill: var(--text-color);
+    }
+
+    .Card-Title {
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    &.selected {
+        border: 2px solid var(--text-color);
+    }
+
+    &:not(.selected):hover {
+        border: 1px solid var(--text-color);
+        opacity: 0.8;
+    }
+}

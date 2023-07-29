@@ -1,0 +1,16 @@
+﻿:root {
+    --text-color: rgba(75, 85, 99);
+    --text-color-light: rgb(157, 168, 185);
+    --border-color: #e5e7eb;
+    --accent-color: rgb(0, 150, 136);
+}
+
+body {
+    color: var(--text-color);
+
+
+    a {
+        text-decoration: none;
+        color: white;
+    }
+}

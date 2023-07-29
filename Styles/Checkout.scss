@@ -1,0 +1,166 @@
+﻿.App-Container {
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+    width: 100%;
+
+    .App-Background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: var(--accent-color);
+        z-index: -1;
+    }
+
+    .App {
+        padding-top: 76px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        z-index: 1;
+        width: 100%;
+        position: relative;
+
+        .Payment {
+            width: 100%;
+            padding: 24px 16px 16px 16px;
+            background-color: white;
+            margin-top: auto;
+
+            .CheckoutForm {
+                width: 100%;
+                max-width: 380px;
+                margin: 0 auto;
+            }
+
+            .Divider {
+                margin-top: 20px;
+                position: relative;
+                height: 25px;
+
+                hr {
+                    margin: 0;
+                    position: absolute;
+                    width: 100%;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    left: 0;
+                    right: 0;
+                }
+
+                p {
+                    font-size: 12px;
+                    background-color: white;
+                    padding: 0 16px;
+                    position: absolute;
+                    left: 50%;
+                    top: 50%;
+                    transform: translateX(-50%) translateY(-50%);
+                    color: var(--text-color-light);
+                }
+            }
+
+            label {
+                font-size: 12px;
+                font-weight: 500;
+                color: var(--text-color);
+            }
+        }
+
+        .Overview {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: white;
+            width: 100%;
+
+            .Summary {
+                max-width: 380px;
+                width: 100%;
+                margin: 0 auto;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .Amount {
+                font-size: 30px;
+                font-weight: 500;
+            }
+
+            .subtitle {
+                font-size: 12px;
+                font-weight: 300;
+            }
+        }
+
+        .AppFooter {
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 16px 0px 32px 0px;
+            color: var(--text-light);
+
+            .PoweredBy {
+                padding: 4px;
+            }
+
+            .FooterLinks {
+                display: flex;
+                font-size: 12px;
+            }
+        }
+    }
+    // Style overwrites for Large screens
+    @include laptop-up {
+        &::before {
+            content: " ";
+            position: fixed;
+            background-color: white;
+            height: 100%;
+            right: 0;
+            top: 0;
+            width: 50%;
+            box-shadow: 1px 0px 20px 0px rgba(0, 0, 0, 0.18);
+            transform-origin: right;
+        }
+
+        .App {
+            flex-direction: row;
+            max-width: 920px;
+
+            .Payment {
+                padding: 0;
+                width: 380px;
+                margin-top: 0;
+            }
+
+            .Overview {
+                width: 380px;
+
+                .Summary {
+                    align-items: start;
+                }
+            }
+
+            .AppFooter {
+                bottom: 0;
+                left: 0;
+                position: absolute;
+                background-color: transparent;
+                flex-direction: row;
+                color: white;
+
+                .PoweredBy {
+                    border-right: 0.7px solid rgba(255, 255, 255, 0.3);
+                    padding: 0 16px 0 0;
+                }
+            }
+        }
+    }
+}

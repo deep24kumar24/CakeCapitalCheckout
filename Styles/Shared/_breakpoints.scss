@@ -1,0 +1,62 @@
+﻿$phone-range: (0, 767px);
+$laptop-range: (992px, 1440px);
+
+// Responsive Mixins
+@function lower-bound($range) {
+    @if length($range) <= 0 {
+        @return 0;
+    }
+
+    @return nth($range, 1);
+}
+
+@function upper-bound($range) {
+    @if length($range) < 2 {
+        @return 999999999999;
+    }
+
+    @return nth($range, 2);
+}
+
+// Media Query Definitions
+$screen: "only screen" !default;
+
+// Mobile Size
+$phone-up: $screen !default;
+$phone-only: "#{$screen} and (max-width: #{upper-bound($phone-range)})" !default;
+
+// Laptop
+$up-to-laptop: "#{$screen} and (max-width:#{upper-bound($laptop-range)})" !default;
+$laptop-up: "#{$screen} and (min-width:#{lower-bound($laptop-range)})" !default;
+$laptop-only: "#{$screen} and (min-width:#{lower-bound($laptop-range)}) and (max-width:#{upper-bound($laptop-range)})" !default;
+
+// Small devices
+@mixin phone-up {
+    @media #{$phone-up} {
+        @content;
+    }
+}
+
+@mixin phone-only {
+    @media #{$phone-only} {
+        @content;
+    }
+}
+
+@mixin up-to-laptop {
+    @media #{$up-to-laptop} {
+        @content;
+    }
+}
+
+@mixin laptop-up {
+    @media #{$laptop-up} {
+        @content;
+    }
+}
+
+@mixin laptop-only {
+    @media #{$laptop-only} {
+        @content;
+    }
+}
