@@ -19,7 +19,7 @@ namespace CakeCapitalCheckout.Controllers
             {
                 var token = await GetToken();
 
-                AirwallexCreateIntentRequestContract requestContract = new(500.0m, countryCode.ToUpper(), Guid.NewGuid().ToString(), Guid.NewGuid());
+                AirwallexCreateIntentRequestContract requestContract = new(500.0m, countryCode.ToUpper(), Guid.NewGuid().ToString(), Guid.NewGuid(), "https://localhost:7103/");
 
                 var client = new RestClient("https://api-demo.airwallex.com/api/v1/pa/payment_intents/create");
                 var request = new RestRequest("", Method.Post);

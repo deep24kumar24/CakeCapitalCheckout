@@ -16,12 +16,16 @@ namespace CakeCapitalCheckout.Models
         [JsonPropertyName("request_id")]
         public Guid RequestId { get; init; }
 
-        public AirwallexCreateIntentRequestContract(decimal Amount, string Currency, string MerchantOrderId, Guid RequestId)
+        [JsonPropertyName("return_url")]
+        public string ReturnUrl { get; init; }
+
+        public AirwallexCreateIntentRequestContract(decimal Amount, string Currency, string MerchantOrderId, Guid RequestId, string returnUrl)
         {
             this.Amount = Amount;
             this.Currency = Currency;
             this.MerchantOrderId = MerchantOrderId;
             this.RequestId = RequestId;
+            ReturnUrl = returnUrl;
         }
     }
 }
