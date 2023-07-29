@@ -17,17 +17,28 @@ namespace CakeCapitalCheckout.Controllers
         {
             try
             {
-                var token = await GetToken();
+                //var token = await GetToken();
 
-                AirwallexCreateIntentRequestContract model = new(500.0m, countryCode.ToUpper(), Guid.NewGuid().ToString(), Guid.NewGuid());
+                //AirwallexCreateIntentRequestContract requestContract = new(500.0m, countryCode.ToUpper(), Guid.NewGuid().ToString(), Guid.NewGuid());
 
-                var client = new RestClient("https://api-demo.airwallex.com/api/v1/pa/payment_intents/create");
-                var request = new RestRequest("", Method.Post);
-                request.AddHeader("Content-Type", "application/json");
-                request.AddHeader("Authorization", $"Bearer {token.Token}");
-                request.AddJsonBody(model);
-                var response = await client.PostAsync<AirwallexPaymentIntent>(request);
-                return PartialView("_PaymentView", response);
+                //var client = new RestClient("https://api-demo.airwallex.com/api/v1/pa/payment_intents/create");
+                //var request = new RestRequest("", Method.Post);
+                //request.AddHeader("Content-Type", "application/json");
+                //request.AddHeader("Authorization", $"Bearer {token.Token}");
+                //request.AddJsonBody(requestContract);
+                //var response = await client.PostAsync<AirwallexPaymentIntent>(request);
+
+                var model = new AirwallexPaymentIntent()
+                {
+                    Id = "int_hkdmhxg82gn9oib5fgf",
+                    Amount = 500.0m,
+                    ClientSecret = "eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2OTA2MDM0NjEsImV4cCI6MTY5MDYwNzA2MSwidHlwZSI6ImNsaWVudC1zZWNyZXQiLCJwYWRjIjoiSEsiLCJhY2NvdW50X2lkIjoiZjNiMGFhNzYtY2ZjMS00YTM5LThmNGMtZWMyMGFmM2ExM2JmIiwiaW50ZW50X2lkIjoiaW50X2hrZG1oeGc4MmduOW9pYjVmZ2YiLCJidXNpbmVzc19uYW1lIjoiQ2FrZSBDYXBpdGFsIFBBIFRlc3QifQ.M4L_66pskzJDhBpNwMuGQrIWX8X3GPrR9VfgHnfdsms",
+                    Currency = "CAD",
+                    AvailablePaymentMethodTypes = new List<string> { "applepay", "googlepay", "card" }
+                };
+
+
+                return PartialView("_PaymentView", model);
             }
             catch(Exception ex)
             {

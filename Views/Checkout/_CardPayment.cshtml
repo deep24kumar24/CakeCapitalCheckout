@@ -1,100 +1,80 @@
 ﻿@model AirwallexPaymentIntent;
 
 <div>
-    <p id="loading">Loading...</p>
-    <!-- Example: Hide all elements before they are all mounted -->
-    <div id="element" style="display: none;">
-        <!--
-             STEP 3a: Add empty containers for the split card elements to be placed into
-             - Ensure these are the only elements in your document with these id, otherwise
-               the elements may fail to mount.
-           -->
-        <div class="field-container">
-            <div>Card number</div>
-            <div id="cardNumber"></div>
-            <p id="cardNumber-error" style="color: red;"></p>
+    <div id="loading" class="m-5">
+        <div class="spinner-border text-dark" role="status">
+            <span class="visually-hidden"> Loading...</span>
         </div>
-        <div class="field-container">
-            <div>Expiry</div>
-            <div id="expiry"></div>
-            <p id="expiry-error" style="color: red;"></p>
-        </div>
-        <div class="field-container">
-            <div>Cvc</div>
-            <div id="cvc"></div>
-            <p id="cvc-error" style="color: red;"></p>
-        </div>
-        <!-- STEP #3b: Add a submit button to trigger the payment request -->
-        <button id="submit">Submit</button>
     </div>
-    <!-- Example: Response message containers -->
-    <p id="error"></p>
-    <p id="success">Payment Successful!</p>
+
+    <div id="element" style="display: none; mt-3">
+        <p id="error" style="color: red; font-size: 12px;"></p>
+
+        <div class="field-container">
+            <label>Card number</label>
+            <div class="cake-input" id="cardNumber"></div>
+        </div>
+        <div class="field-container">
+            <label>Expiry</label>
+            <div class="cake-input" id="expiry"></div>
+        </div>
+        <div class="field-container">
+            <label>Cvc</label>
+            <div class="cake-input" id="cvc"></div>
+        </div>
+        <button class="button mt-5" id="submit" onclick="submitPayment()">Submit</button>
+    </div>
+    
+    <p id="success" style="display: none;">Payment Successful!</p>
+
+
 </div>
 
 
 <script>
     try {
-        // STEP #2: Initialize the Airwallex global context for event communication
         Airwallex.init({
-            env: "demo", // Setup which Airwallex env('staging' | 'demo' | 'prod') to integrate with
-            origin: window.location.origin, // Setup your event target to receive the browser events message
-            fonts: [
-                // Customizes the font for the payment elements
-                {
-                    src:
-                        "https://checkout.airwallex.com/fonts/CircularXXWeb/CircularXXWeb-Regular.woff2",
-                    family: "AxLLCircular",
-                    weight: 400
-                }
-            ]
+            env: "demo",
+            origin: window.location.origin,
         });
 
-        // STEP #4: Create split card elements
         const cardNumber = Airwallex.createElement("cardNumber");
         const expiry = Airwallex.createElement("expiry");
         const cvc = Airwallex.createElement("cvc");
 
-        // STEP #5: Mount split card elements
-        cardNumber.mount("cardNumber"); // This 'cardNumber' id MUST MATCH the id on your cardNumber empty container created in Step 3
-        expiry.mount("expiry"); // Same as above
-        cvc.mount("cvc"); // Same as above
+        cardNumber.mount("cardNumber");
+        expiry.mount("expiry");
+        cvc.mount("cvc");
     } catch (error) {
-        document.getElementById("loading").style.display = "none"; // Example: hide loading state
-        document.getElementById("error").style.display = "block"; // Example: show error
-        document.getElementById("error").innerHTML = error.message; // Example: set error message
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("error").style.display = "block";
+        document.getElementById("error").innerHTML = error.message;
         console.error("There was an error", error);
     }
 
-    // STEP #6a: Add a button handler to trigger the payment request
-    document.getElementById("submit").addEventListener("click", () => {
+
+    function submitPayment() {
         Airwallex.confirmPaymentIntent({
-            element: Airwallex.getElement("cardNumber"), // Only need to submit CardNumber element
+            element: Airwallex.getElement("cardNumber"),
             id: '@Model.Id',
             client_secret: '@Model.ClientSecret'
         })
             .then((response) => {
-                // STEP #6b: Listen to the request response
-                /* handle confirm response */
-                document.getElementById("success").style.display = "block"; // Example: show success block
+                document.getElementById("success").style.display = "block";
                 window.alert(JSON.stringify(response));
             })
             .catch((response) => {
-                // STEP #6c: Listen to the error response
-                /* handle error response */
-                document.getElementById("error").style.display = "block"; // Example: show error block
-                document.getElementById("error").innerHTML = response.message; // Example: set error message
+                document.getElementById("error").style.display = "block";
+                document.getElementById("error").innerHTML = response.message;
                 console.error("There was an error", response);
             });
-    });
+    }
 
-    // Set up local variable to check all elements are mounted
     const elementsReady = {
         cardNumber: false,
         expiry: false,
         cvc: false
     };
-    // STEP #7: Add an event listener to ensure the element is mounted
     const cardNumberElement = document.getElementById("cardNumber");
     const expiryElement = document.getElementById("expiry");
     const cvcElement = document.getElementById("cvc");
@@ -102,22 +82,18 @@
 
     domElementArray.forEach((element) => {
         element.addEventListener("onReady", (event) => {
-            /*
-          ... Handle event
-           */
             const { type } = event.detail;
             if (elementsReady.hasOwnProperty(type)) {
-                elementsReady[type] = true; // Set element ready state
+                elementsReady[type] = true;
             }
 
             if (!Object.values(elementsReady).includes(false)) {
-                document.getElementById("loading").style.display = "none"; // Example: hide loading state when element is mounted
-                document.getElementById("element").style.display = "block"; // Example: show element when mounted
+                document.getElementById("loading").style.display = "none";
+                document.getElementById("element").style.display = "block";
             }
         });
     });
 
-    // Set up local variable to validate element inputs
     const elementsCompleted = {
         cardNumber: false,
         expiry: false,
@@ -126,15 +102,11 @@
 
     domElementArray.forEach((element) => {
         element.addEventListener("onChange", (event) => {
-            /*
-         ... Handle event
-           */
             const { type, complete } = event.detail;
             if (elementsCompleted.hasOwnProperty(type)) {
-                elementsCompleted[type] = complete; // Set element completion state
+                elementsCompleted[type] = complete;
             }
 
-            // Check if all elements are completed, and set submit button disabled state
             const allElementsCompleted = !Object.values(
                 elementsCompleted
             ).includes(false);
@@ -142,40 +114,34 @@
         });
     });
 
-    // STEP #9: Add an event listener to get input focus status
     domElementArray.forEach((element) => {
         element.addEventListener("onFocus", (event) => {
-            // Customize your input focus style by listen onFocus event
-            const { type } = event.detail;
-            const element = document.getElementById(type + "-error");
+            const element = document.getElementById("error");
             if (element) {
-                element.innerHTML = ""; // Example: clear input error message
+                element.innerHTML = "";
             }
         });
     });
 
-    // STEP #10: Add an event listener to show input error message when finish typing
     domElementArray.forEach((element) => {
         element.addEventListener("onBlur", (event) => {
-            const { error, type } = event.detail;
-            const element = document.getElementById(type + "-error");
+            const { error } = event.detail;
+            const element = document.getElementById("error");
             if (element && error) {
-                element.innerHTML = error.message || JSON.stringify(error); // Example: set input error message
+                element.innerHTML = error.message || JSON.stringify(error);
             }
         });
     });
-    // STEP #9: Add an event listener to handle events when there is an error
+
     domElementArray.forEach((element) => {
         element.addEventListener("onBlur", (event) => {
-            /*
-           ... Handle event on error
-         */
             const { error } = event.detail;
+            
             if(error)
             {
-                document.getElementById("error").style.display = "block"; // Example: show error block
-                document.getElementById("error").innerHTML = error.message; // Example: set error message
-                console.error("There was an error", event.detail.error);
+                document.getElementById("error").style.display = "block";
+                document.getElementById("error").innerHTML = error.message;
+                console.error("There was an error", event.detail);
             }
         });
     });
