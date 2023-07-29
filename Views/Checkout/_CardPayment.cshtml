@@ -38,9 +38,9 @@
             origin: window.location.origin,
         });
 
-        const cardNumber = Airwallex.createElement("cardNumber");
-        const expiry = Airwallex.createElement("expiry");
-        const cvc = Airwallex.createElement("cvc");
+        var cardNumber = Airwallex.createElement("cardNumber");
+        var expiry = Airwallex.createElement("expiry");
+        var cvc = Airwallex.createElement("cvc");
 
         cardNumber.mount("cardNumber");
         expiry.mount("expiry");
@@ -70,19 +70,19 @@
             });
     }
 
-    const elementsReady = {
+    var elementsReady = {
         cardNumber: false,
         expiry: false,
         cvc: false
     };
-    const cardNumberElement = document.getElementById("cardNumber");
-    const expiryElement = document.getElementById("expiry");
-    const cvcElement = document.getElementById("cvc");
-    const domElementArray = [cardNumberElement, expiryElement, cvcElement];
+    var cardNumberElement = document.getElementById("cardNumber");
+    var expiryElement = document.getElementById("expiry");
+    var cvcElement = document.getElementById("cvc");
+    var domElementArray = [cardNumberElement, expiryElement, cvcElement];
 
     domElementArray.forEach((element) => {
         element.addEventListener("onReady", (event) => {
-            const { type } = event.detail;
+            var { type } = event.detail;
             if (elementsReady.hasOwnProperty(type)) {
                 elementsReady[type] = true;
             }
@@ -94,7 +94,7 @@
         });
     });
 
-    const elementsCompleted = {
+    var elementsCompleted = {
         cardNumber: false,
         expiry: false,
         cvc: false
@@ -102,12 +102,12 @@
 
     domElementArray.forEach((element) => {
         element.addEventListener("onChange", (event) => {
-            const { type, complete } = event.detail;
+            var { type, complete } = event.detail;
             if (elementsCompleted.hasOwnProperty(type)) {
                 elementsCompleted[type] = complete;
             }
 
-            const allElementsCompleted = !Object.values(
+            var allElementsCompleted = !Object.values(
                 elementsCompleted
             ).includes(false);
             document.getElementById("submit").disabled = !allElementsCompleted;
@@ -116,7 +116,7 @@
 
     domElementArray.forEach((element) => {
         element.addEventListener("onFocus", (event) => {
-            const element = document.getElementById("error");
+            var element = document.getElementById("error");
             if (element) {
                 element.innerHTML = "";
             }
@@ -125,8 +125,8 @@
 
     domElementArray.forEach((element) => {
         element.addEventListener("onBlur", (event) => {
-            const { error } = event.detail;
-            const element = document.getElementById("error");
+            var { error } = event.detail;
+            var element = document.getElementById("error");
             if (element && error) {
                 element.innerHTML = error.message || JSON.stringify(error);
             }
@@ -135,7 +135,7 @@
 
     domElementArray.forEach((element) => {
         element.addEventListener("onBlur", (event) => {
-            const { error } = event.detail;
+            var { error } = event.detail;
             
             if(error)
             {
