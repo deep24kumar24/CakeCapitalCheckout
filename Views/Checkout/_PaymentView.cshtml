@@ -19,6 +19,10 @@
         <p class="text-center text-sm m-0">Or pay another way</p>
     </div>
 
+    <div class="Divider">
+        <hr />
+        <p class="text-center text-sm m-0">Or pay another way</p>
+    </div>
 
     <div class="mt-3">Payment method</div>
 
@@ -71,11 +75,11 @@
                 value: '@Model.Amount',
                 currency: '@Model.Currency',
             },
-            totalPriceLabel: 'COMPANY, INC.', // Provide a business name for the label field.
-            buttonType: 'buy', // Indicate the type of button you want displayed on your payments form. Like 'buy'
-            buttonColor: 'white-with-line', // Indicate the color of the button. Default value is 'black'
+            totalPriceLabel: 'COMPANY, INC.',
+            buttonType: 'buy',
+            buttonColor: 'white-with-line',
             origin: window.location.origin,
-            countryCode: 'CAD', // merchant country code
+            countryCode: '@Model.Currency.Substring(0,2)',
 
         });
 
@@ -83,43 +87,39 @@
             intent_id: '@Model.Id',
             origin: window.location.origin,
             client_secret: '@Model.ClientSecret',
-            countryCode: '@Model.Currency.Substring(0,2)',  // The merchant's two-letter ISO 3166
-            buttonType: 'buy', // Indicate the type of button you want displayed on your payments form. Like 'buy'
+            countryCode: '@Model.Currency.Substring(0,2)',
+            buttonType: 'buy',
             amount: {
                 value: '@Model.Amount',
                 currency: '@Model.Currency',
             },
         });
 
-        const googleElement = googlePayElement.mount('googlePayButton'); // Injects iframe into the Google Pay Element container
+        const googleElement = googlePayElement.mount('googlePayButton'); 
+        const appleElement = applePayElement.mount('applePayButton');
 
-        const domElement = applePayElement.mount('applePayButton'); // Injects iframe into the Apple Pay Element container
-
-        domElement.addEventListener('onReady', (event) => {
-            //document.getElementById('applepay-container').style.display = 'block';
-            //document.getElementById('applepay-submit').style.display = 'block';
+        appleElement.addEventListener('onReady', (event) => {
             console.log('Element is ready', event.detail);
         });
-        googleElement.addEventListener('onReady', (event) => {
-            //document.getElementById('applepay-container').style.display = 'block';
-            //document.getElementById('applepay-submit').style.display = 'block';
-            console.log('Element is ready', event.detail);
-        });
-
-        domElement.addEventListener('onError', (event) => {
+        appleElement.addEventListener('onError', (event) => {
             const { error } = event.detail;
-            //document.getElementById('error').style.display = 'block'; // Example: show error
-            //document.getElementById('error').innerHTML = error.message; // Example: set error message
             console.error('There was an error', error);
         });
+        appleElement.addEventListener('onSuccess', (event) => {
+            alert("Success");
+        });
 
-        domElement.addEventListener('onSuccess', (event) => {
-            // handle your success event
-            console.log("Success");
+        googleElement.addEventListener('onReady', (event) => {
+            console.log('Element is ready', event.detail);
+        });
+        googleElement.addEventListener('onError', (event) => {
+            const { error } = event.detail;
+            console.error('There was an error', error);
+        });
+        googleElement.addEventListener('onSuccess', (event) => {
+            alert("Success");
         });
     } catch (error) {
-        //document.getElementById('error').style.display = 'block'; // Example: show error
-        //document.getElementById('error').innerHTML = error.message; // Example: set error message
         console.error('There was an error', error);
     }
 

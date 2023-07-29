@@ -8,7 +8,7 @@
     </div>
 
     <div id="element" style="display: none;">
-        <div id="success" class="alert alert-success mt-5" style="display: none;">Payment was Successful!</div>
+        <div id="success" class="alert alert-success" style="display: none;">Payment was Successful!</div>
 
         <p id="error" style="color: red; font-size: 12px;"></p>
 
@@ -24,7 +24,7 @@
             <label>Cvc</label>
             <div class="cake-input" id="cvc"></div>
         </div>
-        <button class="button mt-5" id="submit" onclick="submitPayment()">Submit</button>
+        <button class="button mt-5" id="submit" onclick="submitPayment(this)">Pay now</button>
     </div>
 </div>
 
@@ -51,18 +51,27 @@
     }
 
 
-    function submitPayment() {
+    function submitPayment(element) {
+        element.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Submitting...';
+        element.disabled = true;
+
         Airwallex.confirmPaymentIntent({
             element: Airwallex.getElement("cardNumber"),
             id: '@Model.Id',
             client_secret: '@Model.ClientSecret'
         })
             .then((response) => {
+                element.innerHTML = 'Pay now';
+                element.disabled = false;
+
                 document.getElementById("success").style.display = "block";
                 alert("Payment is succcessful");
                 window.location.reload();
             })
             .catch((response) => {
+                element.innerHTML = 'Pay now';
+                element.disabled = false;
+
                 document.getElementById("error").style.display = "block";
                 document.getElementById("error").innerHTML = response.message;
                 console.error("There was an error", response);
