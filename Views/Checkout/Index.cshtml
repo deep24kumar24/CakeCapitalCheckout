@@ -33,7 +33,7 @@
             </div>
 
             <div class="Payment">
-                <div class="CheckoutForm">
+                <div class="CheckoutForm pb-5">
                     <div class="d-flex flex-column">
                         <label>Email</label>
                         <input class="cake-input" />
@@ -80,8 +80,9 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
+            var selectedCountry =  $("select#country")[0].value;
             $("#paymentView").html('<div class="m-5"><div class="spinner-border text-dark" role="status"><span class= "visually-hidden" > Loading...</span></div></div>')
-            $("#paymentView").load('/payment-view?countryCode=CAD');
+            $("#paymentView").load('/payment-view?countryCode=' + selectedCountry);
         });
 
         $("select#country").on("change", function () {

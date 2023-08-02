@@ -1,0 +1,37 @@
+﻿@model AirwallexPaymentIntent;
+
+<div id="dropIn"></div>
+
+<script>
+    try {
+        Airwallex.init({
+            env: 'demo',
+            origin: window.location.origin,
+        });
+
+        const dropInElement = Airwallex.createElement('dropIn', {
+            intent_id: '@Model.Id',
+            client_secret: '@Model.ClientSecret',
+            currency: '@Model.Currency',
+            methods: ['ach_direct_debit']
+        });
+
+        const domElement = dropInElement.mount('dropIn');
+
+        domElement.addEventListener('onReady', (event) => {
+            console.log('Element is ready', event.detail);
+        });
+        domElement.addEventListener('onError', (event) => {
+            const { error } = event.detail;
+            console.error('There was an error', error);
+        });
+        domElement.addEventListener('onSuccess', (event) => {
+            console.log(event.detail);
+            alert("Success");
+            window.location.reload();
+        });
+
+    } catch (error) {
+        console.error('There was an error', error);
+    }
+</script>

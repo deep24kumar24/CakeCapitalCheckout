@@ -46,6 +46,7 @@ button[type=button]:disabled {
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.3s;
+  background-color: white;
 }
 .Card svg {
   height: 18px;
@@ -56,10 +57,11 @@ button[type=button]:disabled {
   font-size: 12px;
   font-weight: 500;
 }
-.Card.selected {
+.Card.active {
   border: 2px solid var(--text-color);
+  box-shadow: rgba(0, 0, 0, 0.44) 0 0 0;
 }
-.Card:not(.selected):hover {
+.Card:not(.active):hover {
   border: 1px solid var(--text-color);
   opacity: 0.8;
 }
