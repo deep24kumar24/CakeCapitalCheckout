@@ -16,7 +16,6 @@ namespace CakeCapitalCheckout.Controllers
             _xanoService = xanoService;
         }
 
-
         [Route("/{id}")]
         public async Task<IActionResult> Index(string id)
         {

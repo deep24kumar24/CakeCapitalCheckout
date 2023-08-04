@@ -11,6 +11,8 @@ namespace CakeCapitalCheckout.Service
     {
         Task<RestResponse<PaymentSession>> GetPaymentSessionAsync(string id);
         Task<RestResponse<Merchant>> GetMerchantAsync(int id);
+
+        Task<RestResponse<string>> CreateSessionAsync(CreatePaymentSessionRequestContract requestContract);
     }
 
     public class XanoService : IXanoService
@@ -49,7 +51,21 @@ namespace CakeCapitalCheckout.Service
             {
                 return null;
             }
+        }
 
+        public async Task<RestResponse<string>> CreateSessionAsync(CreatePaymentSessionRequestContract requestContract)
+        {
+            try
+            {
+                var request = new RestRequest($"/session", Method.Post);
+                request.AddJsonBody(requestContract);
+                var response = await restClient.ExecutePostAsync<string>(request);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
     }
 }
