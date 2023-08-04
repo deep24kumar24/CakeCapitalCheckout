@@ -1,7 +1,9 @@
-﻿using CakeCapitalCheckout.Models.Xano;
+﻿using CakeCapitalCheckout.Models.Helper;
+using CakeCapitalCheckout.Models.Xano;
 using CakeCapitalCheckout.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using RestSharp;
 
 namespace CakeCapitalCheckout.Controllers
@@ -20,18 +22,18 @@ namespace CakeCapitalCheckout.Controllers
         {
             try
             {
-                var error = ValidateRequest(requestContract);
-                if (error != null)
-                    return BadRequest(error);
+                var validationError = ValidateRequest(requestContract);
+                if (validationError != null)
+                    return BadRequest(validationError);
 
                 var result = await _xanoService.CreateSessionAsync(requestContract);
 
                 if(result.IsSuccessful)
                 {
-                    return Ok(result.Data);
+                    return Ok(result.Content);
                 }
 
-                return BadRequest(result.ErrorMessage);
+                return BadRequest(result.Content);
             }
             catch (Exception ex)
             {
