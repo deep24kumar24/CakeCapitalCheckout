@@ -1,5 +1,6 @@
 using CakeCapitalCheckout.Service;
 using Newtonsoft;
+using Sentry;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,16 @@ services.AddSession(options =>
 });
 
 var app = builder.Build();
+
+SentrySdk.Init(options =>
+{
+    options.Dsn = "https://df6497e1cebf1897e6c028e541f3f082@o4505647491710976.ingest.sentry.io/4505647530967040";
+    options.Debug = true;
+    options.AutoSessionTracking = true;
+    options.IsGlobalModeEnabled = false;
+    options.EnableTracing = true;
+    options.TracesSampleRate = 1;
+});
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

@@ -1,10 +1,6 @@
-﻿using CakeCapitalCheckout.Models.Helper;
-using CakeCapitalCheckout.Models.Xano;
+﻿using CakeCapitalCheckout.Models.Xano;
 using CakeCapitalCheckout.Service;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using RestSharp;
 
 namespace CakeCapitalCheckout.Controllers
 {

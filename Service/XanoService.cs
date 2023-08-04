@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using RestSharp;
 using RestSharp.Serializers;
 using RestSharp.Serializers.NewtonsoftJson;
+using Sentry;
 
 namespace CakeCapitalCheckout.Service
 {
@@ -35,6 +36,7 @@ namespace CakeCapitalCheckout.Service
             }
             catch (Exception ex)
             {
+                SentrySdk.CaptureException(ex);
                 return null;
             }
         }
@@ -49,6 +51,7 @@ namespace CakeCapitalCheckout.Service
             }
             catch (Exception ex)
             {
+                SentrySdk.CaptureException(ex);
                 return null;
             }
         }
@@ -64,6 +67,7 @@ namespace CakeCapitalCheckout.Service
             }
             catch (Exception ex)
             {
+                SentrySdk.CaptureException(ex);
                 return null;
             }
         }

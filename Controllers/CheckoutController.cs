@@ -1,6 +1,7 @@
 ﻿using CakeCapitalCheckout.Service;
 using CakeCapitalCheckout.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Sentry;
 
 namespace CakeCapitalCheckout.Controllers
 {
@@ -19,28 +20,37 @@ namespace CakeCapitalCheckout.Controllers
         [Route("/{id}")]
         public async Task<IActionResult> Index(string id)
         {
-            var paymentResult =  await _xanoService.GetPaymentSessionAsync(id);
-            var paymentSession = paymentResult.Data;
-
-            if(paymentResult.IsSuccessful && paymentSession != null && paymentSession.Status == Models.Xano.PaymentSessionStatus.Created)
+            try
             {
-                var model = new CheckoutViewModel()
-                {
-                    PaymentSession = paymentResult.Data,
-                };
+                var paymentResult = await _xanoService.GetPaymentSessionAsync(id);
+                var paymentSession = paymentResult.Data;
 
-                var merchantResult = await _xanoService.GetMerchantAsync(model.PaymentSession.MerchantId);
-                
-                if(merchantResult.IsSuccessful && merchantResult.Data != null)
+                if (paymentResult.IsSuccessful && paymentSession != null && paymentSession.Status == Models.Xano.PaymentSessionStatus.Created)
                 {
-                    model.Merchant = merchantResult.Data;
-                    HttpContext.Session.SetString(SESSION_KEY, id);
+                    var model = new CheckoutViewModel()
+                    {
+                        PaymentSession = paymentResult.Data,
+                    };
 
-                    return View(model);
+                    var merchantResult = await _xanoService.GetMerchantAsync(model.PaymentSession.MerchantId);
+
+                    if (merchantResult.IsSuccessful && merchantResult.Data != null)
+                    {
+                        model.Merchant = merchantResult.Data;
+                        HttpContext.Session.SetString(SESSION_KEY, id);
+
+                        return View(model);
+                    }
                 }
-            }
 
-            return View("NotFound");
+                return View("NotFound");
+            }
+            catch(Exception ex)
+            {
+                SentrySdk.CaptureException(ex);
+                return View("NotFound");
+            }
+            
         }
 
         [HttpGet("payment-view")]
@@ -58,7 +68,7 @@ namespace CakeCapitalCheckout.Controllers
                     {
                         var paymentSession = paymentSessionResult.Data;
 
-                        var response = await _airwallexService.CreateIntentAsync(paymentSession.Amount, countryCode, paymentSession.SuccessUrl);
+                        var response = await _airwallexService.CreateIntentAsync(paymentSession.Amount, countryCode, ""); // paymentSession.SuccessUrl);
 
                         var model = new CheckoutViewModel()
                         {
@@ -74,7 +84,7 @@ namespace CakeCapitalCheckout.Controllers
             }
             catch(Exception ex)
             {
-                BadRequest(ex.Message);
+                SentrySdk.CaptureException(ex);
                 return View("NotFound");
             }
         }

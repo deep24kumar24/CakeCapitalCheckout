@@ -1,5 +1,6 @@
 ﻿using CakeCapitalCheckout.Models.Airwallex;
 using RestSharp;
+using Sentry;
 
 namespace CakeCapitalCheckout.Service
 {
@@ -18,20 +19,29 @@ namespace CakeCapitalCheckout.Service
 
         public async Task<AirwallexPaymentIntent> CreateIntentAsync(decimal amount, string countryCode, string returnUrl)
         {
-            var token = await GetToken();
+            try
+            {
+                var token = await GetToken();
 
-            AirwallexCreateIntentRequestContract requestContract = new(amount, 
-                                                                        countryCode.ToUpper(), 
-                                                                        Guid.NewGuid().ToString(), 
-                                                                        Guid.NewGuid(), 
-                                                                        returnUrl);
+                AirwallexCreateIntentRequestContract requestContract = new(amount,
+                                                                            countryCode.ToUpper(),
+                                                                            Guid.NewGuid().ToString(),
+                                                                            Guid.NewGuid(),
+                                                                            returnUrl);
 
-            var client = new RestClient(CREATE_INTENT_URI);
-            var request = new RestRequest("", Method.Post);
-            request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Authorization", $"Bearer {token.Token}");
-            request.AddJsonBody(requestContract);
-            return await client.PostAsync<AirwallexPaymentIntent>(request);
+                var client = new RestClient(CREATE_INTENT_URI);
+                var request = new RestRequest("", Method.Post);
+                request.AddHeader("Content-Type", "application/json");
+                request.AddHeader("Authorization", $"Bearer {token.Token}");
+                request.AddJsonBody(requestContract);
+                return await client.PostAsync<AirwallexPaymentIntent>(request);
+            }
+            catch (Exception ex)
+            {
+                SentrySdk.CaptureException(ex);
+                return null;
+            }
+
         }
 
         private async Task<AirwallexToken> GetToken()
