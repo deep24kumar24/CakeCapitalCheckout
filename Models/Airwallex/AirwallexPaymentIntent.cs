@@ -1,7 +1,6 @@
-﻿using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
-namespace CakeCapitalCheckout.Models
+namespace CakeCapitalCheckout.Models.Airwallex
 {
     public class AirwallexPaymentIntent
     {

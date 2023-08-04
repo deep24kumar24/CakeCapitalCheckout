@@ -1,13 +1,13 @@
-﻿@model AirwallexPaymentIntent;
+﻿@model CakeCapitalCheckout.ViewModels.CheckoutViewModel;
 
 <div>
     <div class="mt-5">
-        @if (Model.AvailablePaymentMethodTypes.Contains("applepay"))
+        @if (Model.PaymentIntent.AvailablePaymentMethodTypes.Contains("applepay"))
         {
             <div id="applePayButton"></div>
         }
 
-        @if (Model.AvailablePaymentMethodTypes.Contains("googlepay"))
+        @if (Model.PaymentIntent.AvailablePaymentMethodTypes.Contains("googlepay"))
         {
             <div id="googlePayButton"></div>
         }
@@ -23,7 +23,7 @@
 
     <div class="d-flex mt-3">
         <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-            @if (Model.AvailablePaymentMethodTypes.Contains("card"))
+            @if (Model.PaymentIntent.AvailablePaymentMethodTypes.Contains("card"))
             {
                 <li class="" role="presentation">
                     <div class="Card active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">
@@ -35,7 +35,7 @@
                 </li>
             }
 
-            @if (Model.AvailablePaymentMethodTypes.Contains("ach_direct_debit"))
+            @if (Model.PaymentIntent.AvailablePaymentMethodTypes.Contains("ach_direct_debit"))
             {
                 <li class="" role="presentation">
                     <div class="Card" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">
@@ -53,10 +53,10 @@
 
     <div class="tab-content" id="pills-tabContent">
         <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0">
-            <partial name="_CardPaymentView.cshtml" />
+            <partial name="_CardPaymentView.cshtml" model="Model" />
         </div>
 
-        @if (Model.AvailablePaymentMethodTypes.Contains("ach_direct_debit"))
+        @if (Model.PaymentIntent.AvailablePaymentMethodTypes.Contains("ach_direct_debit"))
         {
             <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab" tabindex="0">
                 <partial name="_DirectDebitView.cshtml" />
@@ -79,29 +79,29 @@
         const applePayElement = Airwallex.createElement('applePayButton', {
 
             // Required, Apple Pay uses intent Id and client_secret to prepare checkout
-            intent_id: '@Model.Id',
-            client_secret: '@Model.ClientSecret',
+            intent_id: '@Model.PaymentIntent.Id',
+            client_secret: '@Model.PaymentIntent.ClientSecret',
             amount: {
-                value: '@Model.Amount',
-                currency: '@Model.Currency',
+                value: '@Model.PaymentIntent.Amount',
+                currency: '@Model.PaymentIntent.Currency',
             },
             totalPriceLabel: 'COMPANY, INC.',
             buttonType: 'buy',
             buttonColor: 'white-with-line',
             origin: window.location.origin,
-            countryCode: '@Model.Currency.Substring(0,2)',
+            countryCode: '@Model.PaymentIntent.Currency.Substring(0,2)',
 
         });
 
         const googlePayElement = Airwallex.createElement("googlePayButton", {
-            intent_id: '@Model.Id',
+            intent_id: '@Model.PaymentIntent.Id',
             origin: window.location.origin,
-            client_secret: '@Model.ClientSecret',
-            countryCode: '@Model.Currency.Substring(0,2)',
+            client_secret: '@Model.PaymentIntent.ClientSecret',
+            countryCode: '@Model.PaymentIntent.Currency.Substring(0,2)',
             buttonType: 'buy',
             amount: {
-                value: '@Model.Amount',
-                currency: '@Model.Currency',
+                value: '@Model.PaymentIntent.Amount',
+                currency: '@Model.PaymentIntent.Currency',
             },
         });
 

@@ -1,15 +1,47 @@
-﻿using CakeCapitalCheckout.Models;
+﻿using CakeCapitalCheckout.Service;
+using CakeCapitalCheckout.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using RestSharp;
 
 namespace CakeCapitalCheckout.Controllers
 {
     public class CheckoutController : Controller
     {
-        [Route("/")]
-        public async Task<IActionResult> Index()
+        private readonly IAirwallexService _airwallexService;
+        private readonly IXanoService _xanoService;
+        private readonly string SESSION_KEY = "SessionId";
+
+        public CheckoutController(IAirwallexService airwallexService, IXanoService xanoService) 
         {
-            return View();
+            _airwallexService = airwallexService;
+            _xanoService = xanoService;
+        }
+
+
+        [Route("/{id}")]
+        public async Task<IActionResult> Index(string id)
+        {
+            var paymentResult =  await _xanoService.GetPaymentSessionAsync(id);
+            var paymentSession = paymentResult.Data;
+
+            if(paymentResult.IsSuccessful && paymentSession != null && paymentSession.Status == Models.Xano.PaymentSessionStatus.Created)
+            {
+                var model = new CheckoutViewModel()
+                {
+                    PaymentSession = paymentResult.Data,
+                };
+
+                var merchantResult = await _xanoService.GetMerchantAsync(model.PaymentSession.MerchantId);
+                
+                if(merchantResult.IsSuccessful && merchantResult.Data != null)
+                {
+                    model.Merchant = merchantResult.Data;
+                    HttpContext.Session.SetString(SESSION_KEY, id);
+
+                    return View(model);
+                }
+            }
+
+            return View("NotFound");
         }
 
         [HttpGet("payment-view")]
@@ -17,38 +49,35 @@ namespace CakeCapitalCheckout.Controllers
         {
             try
             {
-                var response = await CreateIntent(500.0m,countryCode);
-                return PartialView("_PaymentView", response);
+                var sessionId = HttpContext.Session.GetString(SESSION_KEY);
+
+                if(!string.IsNullOrEmpty(sessionId))
+                {
+                    var paymentSessionResult = await _xanoService.GetPaymentSessionAsync(sessionId);
+
+                    if (paymentSessionResult.IsSuccessful && paymentSessionResult.Data != null)
+                    {
+                        var paymentSession = paymentSessionResult.Data;
+
+                        var response = await _airwallexService.CreateIntentAsync(paymentSession.Amount, countryCode, paymentSession.SuccessUrl);
+
+                        var model = new CheckoutViewModel()
+                        {
+                            PaymentIntent = response,
+                            PaymentSession = paymentSession
+                        };
+
+                        return PartialView("_PaymentView", model);
+                    }
+                }
+                
+                return View("NotFound");
             }
             catch(Exception ex)
             {
-                return BadRequest(ex.Message);
+                BadRequest(ex.Message);
+                return View("NotFound");
             }
-        }
-
-        private static async Task<AirwallexToken> GetToken()
-        {
-            var apiKey = "17fbc7b14e99dc74a3f1070c83b06a3c922cc687bbbf1f6ed77033cf6b3b333b0fe56812517201dbafd3af108a3188f8";
-            var clientId = "fTJn6LvCQgGFham22cOmzA";
-            var client = new RestClient("https://api-demo.airwallex.com/api/v1/authentication/login");
-            var request = new RestRequest("", Method.Post);
-            request.AddHeader("x-api-key", apiKey);
-            request.AddHeader("x-client-id", clientId);
-            return await client.PostAsync<AirwallexToken>(request);
-        }
-
-        private static async Task<AirwallexPaymentIntent> CreateIntent(decimal amount, string countryCode)
-        {
-            var token = await GetToken();
-
-            AirwallexCreateIntentRequestContract requestContract = new(amount, countryCode.ToUpper(), Guid.NewGuid().ToString(), Guid.NewGuid(), "https://localhost:7103/");
-
-            var client = new RestClient("https://api-demo.airwallex.com/api/v1/pa/payment_intents/create");
-            var request = new RestRequest("", Method.Post);
-            request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Authorization", $"Bearer {token.Token}");
-            request.AddJsonBody(requestContract);
-            return await client.PostAsync<AirwallexPaymentIntent>(request);
         }
     }
 }

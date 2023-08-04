@@ -1,4 +1,5 @@
-﻿@{
+﻿@model CakeCapitalCheckout.ViewModels.CheckoutViewModel;
+@{
     ViewData["Title"] = "Home Page";
 }
 
@@ -9,24 +10,26 @@
         <div class="App">
             <div class="Overview">
                 <div class="Header">
-                    <div class="HeaderContainer">
-                        <svg height="20" viewBox="0 0 48 48" width="20" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M0 0h48v48h-48z" fill="none" />
-                            <path d="M40 22h-24.34l11.17-11.17-2.83-2.83-16 16 16 16 2.83-2.83-11.17-11.17h24.34v-4z" />
-                        </svg>
-                        <div>
-                            <Image alt="go back to Together" height={60} width={200} quality={100} src="./images/logo.png" />
+                    <a href="@Model.PaymentSession.CancelUrl">
+                        <div class="HeaderContainer">
+                            <svg height="20" viewBox="0 0 48 48" width="20" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M0 0h48v48h-48z" fill="none" />
+                                <path d="M40 22h-24.34l11.17-11.17-2.83-2.83-16 16 16 16 2.83-2.83-11.17-11.17h24.34v-4z" />
+                            </svg>
+                            <div>
+                                <Image alt="go back to Together" height={60} width={200} quality={100} src="@Model.Merchant.Logo.Url" />
+                            </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
 
                 <div class="Summary">
-                    <div class="Amount">$500.0</div>
+                    <div class="Amount">$@Model.PaymentSession.Amount</div>
 
                     <div class="subtitle pb-5">Due July 21, 2023</div>
 
                     <div class="mt-5 pt-5">
-                        <div>From: Togethere Inc.</div>
+                        <div>From: @Model.Merchant.Title</div>
                         <div>Invoice# 7G754SLYD6</div>
                     </div>
                 </div>
@@ -51,7 +54,8 @@
                         <div class="m-5">
                             <div class="spinner-border text-dark" role="status">
                                 <span class="visually-hidden"> Loading...</span>
-                            </div></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -80,7 +84,7 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            var selectedCountry =  $("select#country")[0].value;
+            var selectedCountry = $("select#country")[0].value;
             $("#paymentView").html('<div class="m-5"><div class="spinner-border text-dark" role="status"><span class= "visually-hidden" > Loading...</span></div></div>')
             $("#paymentView").load('/payment-view?countryCode=' + selectedCountry);
         });

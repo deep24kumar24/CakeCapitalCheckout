@@ -1,4 +1,4 @@
-﻿@model AirwallexPaymentIntent;
+﻿@model CakeCapitalCheckout.ViewModels.CheckoutViewModel;
 
 <div>
     <div id="loading" class="m-5">
@@ -24,7 +24,7 @@
             <label>Cvc</label>
             <div class="cake-input" id="cvc"></div>
         </div>
-        <button class="button mt-5" id="submit" onclick="submitPayment(this)">Pay now</button>
+        <button class="button mt-5" id="submit" onclick="submitPayment(this)" disabled>Pay now</button>
     </div>
 </div>
 
@@ -57,25 +57,24 @@
 
         Airwallex.confirmPaymentIntent({
             element: Airwallex.getElement("cardNumber"),
-            id: '@Model.Id',
-            client_secret: '@Model.ClientSecret'
+            id: '@Model.PaymentIntent.Id',
+            client_secret: '@Model.PaymentIntent.ClientSecret'
         })
-            .then((response) => {
-                element.innerHTML = 'Pay now';
-                element.disabled = false;
+        .then((response) => {
+            element.innerHTML = 'Pay now';
+            element.disabled = false;
 
-                document.getElementById("success").style.display = "block";
-                alert("Payment is succcessful");
-                window.location.reload();
-            })
-            .catch((response) => {
-                element.innerHTML = 'Pay now';
-                element.disabled = false;
+            document.getElementById("success").style.display = "block";
+            window.location.href = '@Model.PaymentSession.SuccessUrl';
+        })
+        .catch((response) => {
+            element.innerHTML = 'Pay now';
+            element.disabled = false;
 
-                document.getElementById("error").style.display = "block";
-                document.getElementById("error").innerHTML = response.message;
-                console.error("There was an error", response);
-            });
+            document.getElementById("error").style.display = "block";
+            document.getElementById("error").innerHTML = response.message;
+            console.error("There was an error", response);
+        });
     }
 
     var elementsReady = {

@@ -1,4 +1,4 @@
-﻿@model AirwallexPaymentIntent;
+﻿@model CakeCapitalCheckout.ViewModels.CheckoutViewModel;
 
 <div id="dropIn"></div>
 
@@ -10,9 +10,9 @@
         });
 
         const dropInElement = Airwallex.createElement('dropIn', {
-            intent_id: '@Model.Id',
-            client_secret: '@Model.ClientSecret',
-            currency: '@Model.Currency',
+            intent_id: '@Model.PaymentIntent.Id',
+            client_secret: '@Model.PaymentIntent.ClientSecret',
+            currency: '@Model.PaymentIntent.Currency',
             methods: ['ach_direct_debit']
         });
 
