@@ -7,10 +7,12 @@ namespace CakeCapitalCheckout.Controllers
     public class CakeSessionController : Controller
     {
         private readonly IXanoService _xanoService;
+        private readonly IConfiguration _configuration;
 
-        public CakeSessionController(IXanoService xanoService)
+        public CakeSessionController(IXanoService xanoService, IConfiguration configuration)
         {
             _xanoService = xanoService;
+            _configuration = configuration;
         }
 
         [HttpPost]
@@ -23,7 +25,10 @@ namespace CakeCapitalCheckout.Controllers
                     return BadRequest(validationError);
 
                 var result = await _xanoService.CreatePaymentSessionAsync(requestContract);
-                return Ok(result);
+
+                var host = _configuration.GetValue<string>("HostUrl");
+
+                return Ok($"{host}/{result}");
             }
             catch (Exception ex)
             {
@@ -41,6 +46,9 @@ namespace CakeCapitalCheckout.Controllers
 
             if (requestContract.Amount <= 0)
                 return "Amount should be greater than 0.";
+
+            if (string.IsNullOrEmpty(requestContract.OrderId) || !requestContract.OrderId.Any())
+                return "Order Id is required.";
 
             if (!isValidUrl(requestContract.SuccessUrl))
                 return "Success Url must be a valid http or https url";
