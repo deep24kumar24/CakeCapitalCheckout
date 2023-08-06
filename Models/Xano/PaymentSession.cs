@@ -5,7 +5,7 @@ namespace CakeCapitalCheckout.Models.Xano
 {
     public class PaymentSession
     {
-        [JsonProperty("session_id")]
+        [JsonProperty("sessionId")]
         public Guid Id { get; set; }
 
         [JsonProperty("status")]
@@ -14,17 +14,23 @@ namespace CakeCapitalCheckout.Models.Xano
         [JsonProperty ("amount")]
         public decimal Amount { get; set; }
 
-        [JsonProperty("merchant_id")]
-        public int MerchantId { get; set; }
-
         [JsonProperty("cancel_url")]
         public string CancelUrl { get; set; }
+
+        [JsonProperty("order_id")]
+        public string OrderId { get; set; }
 
         [JsonProperty("success_url")]
         public string SuccessUrl { get; set; }
 
-        [JsonProperty("created_at")]
-        public long CreatedAtTimestamp { get; set; }
+        [JsonProperty("completed")]
+        public bool IsCompleted { get; set; }
+
+        [JsonProperty("countries")]
+        public List<Country> Countries { get; set; }
+
+        [JsonProperty("merchant")]
+        public Merchant Merchant { get; set; } 
     }
 
     public enum PaymentSessionStatus {

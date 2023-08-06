@@ -1,8 +1,5 @@
-﻿using CakeCapitalCheckout.Models.Airwallex;
-using CakeCapitalCheckout.Models.Xano;
-using Newtonsoft.Json;
+﻿using CakeCapitalCheckout.Models.Xano;
 using RestSharp;
-using RestSharp.Serializers;
 using RestSharp.Serializers.NewtonsoftJson;
 using Sentry;
 
@@ -11,64 +8,68 @@ namespace CakeCapitalCheckout.Service
     public interface IXanoService
     {
         Task<RestResponse<PaymentSession>> GetPaymentSessionAsync(string id);
-        Task<RestResponse<Merchant>> GetMerchantAsync(int id);
-
-        Task<RestResponse<string>> CreateSessionAsync(CreatePaymentSessionRequestContract requestContract);
+        Task<string> CreatePaymentSessionAsync(CreatePaymentSessionRequestContract requestContract);
     }
 
     public class XanoService : IXanoService
     {
-        private readonly string XANO_API_URI = "https://x8ki-letl-twmt.n7.xano.io/api:AUehKOwf";
         private readonly RestClient restClient;
+        private readonly IConfiguration _configuration;
 
-        public XanoService() 
+        public XanoService(IConfiguration configuration) 
         {
-            restClient = new RestClient(XANO_API_URI, configureSerialization: s => s.UseNewtonsoftJson());
+            _configuration = configuration;
+            var apiUrl = _configuration.GetValue<string>("Xano:ApiUrl");
+            
+            if (apiUrl != null)
+            {
+                restClient = new RestClient(apiUrl, configureSerialization: s => s.UseNewtonsoftJson());
+            }
+            else
+            {
+                throw new Exception("Xano Api Url is not configured properly");
+            }
         }
 
         public async Task<RestResponse<PaymentSession>> GetPaymentSessionAsync(string paymentId)
         {
             try
             {
-                var request = new RestRequest($"/session/{paymentId}", Method.Get);
+                var DATA_SOURCE_HEADER = _configuration.GetValue<string>("Xano:DataSourceHeader");
+
+                var request = new RestRequest($"/payment/session/id?id={paymentId}", Method.Get);
+                request.AddHeader("X-Data-Source", DATA_SOURCE_HEADER!);
                 var response = await restClient.ExecuteGetAsync<PaymentSession>(request);
                 return response;
             }
             catch (Exception ex)
             {
                 SentrySdk.CaptureException(ex);
-                return null;
+                throw ex;
             }
         }
 
-        public async Task<RestResponse<Merchant>> GetMerchantAsync(int merchantId)
+        public async Task<string> CreatePaymentSessionAsync(CreatePaymentSessionRequestContract requestContract)
         {
             try
             {
-                var request = new RestRequest($"/merchant/{merchantId}", Method.Get);
-                var response = await restClient.ExecuteGetAsync<Merchant>(request);
-                return response;
-            }
-            catch (Exception ex)
-            {
-                SentrySdk.CaptureException(ex);
-                return null;
-            }
-        }
+                var DATA_SOURCE_HEADER = _configuration.GetValue<string>("Xano:DataSourceHeader");
 
-        public async Task<RestResponse<string>> CreateSessionAsync(CreatePaymentSessionRequestContract requestContract)
-        {
-            try
-            {
-                var request = new RestRequest($"/session", Method.Post);
+                var request = new RestRequest($"/payment/session", Method.Post);
+                request.AddHeader("X-Data-Source", DATA_SOURCE_HEADER!);
                 request.AddJsonBody(requestContract);
-                var response = await restClient.ExecutePostAsync<string>(request);
-                return response;
+
+                var response = await restClient.ExecutePostAsync<CreatePaymentSessionResponseContract>(request);
+
+                if (response != null && response.Data != null && response.Data.Status == 201)
+                    return response.Data.Message;
+                else
+                    throw new Exception("XanoService: Something Went wroong.");
             }
             catch (Exception ex)
             {
                 SentrySdk.CaptureException(ex);
-                return null;
+                throw ex;
             }
         }
     }

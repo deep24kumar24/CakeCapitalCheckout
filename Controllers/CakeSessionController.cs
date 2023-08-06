@@ -22,14 +22,8 @@ namespace CakeCapitalCheckout.Controllers
                 if (validationError != null)
                     return BadRequest(validationError);
 
-                var result = await _xanoService.CreateSessionAsync(requestContract);
-
-                if(result.IsSuccessful)
-                {
-                    return Ok(result.Content);
-                }
-
-                return BadRequest(result.Content);
+                var result = await _xanoService.CreatePaymentSessionAsync(requestContract);
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -42,18 +36,17 @@ namespace CakeCapitalCheckout.Controllers
             if (requestContract == null)
                 return "Request cannot be null";
 
+            if (string.IsNullOrEmpty(requestContract.MerchantToken))
+                return "Merchant Token is required. You can get this token from your Cake Capital Portal.";
+
             if (requestContract.Amount <= 0)
                 return "Amount should be greater than 0.";
-
-            if (requestContract.MerchantId <= 0)
-                return "Merchant should be greater than 0.";
 
             if (!isValidUrl(requestContract.SuccessUrl))
                 return "Success Url must be a valid http or https url";
 
             if (!isValidUrl(requestContract.CancelUrl))
                 return "Cancel Url must be a valid http or https url";
-
 
             return null;
         }

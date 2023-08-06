@@ -17,6 +17,12 @@ namespace CakeCapitalCheckout.Controllers
             _xanoService = xanoService;
         }
 
+        [Route("/")]
+        new public IActionResult NotFound() 
+        {
+            return View();
+        }
+
         [Route("/{id}")]
         public async Task<IActionResult> Index(string id)
         {
@@ -32,15 +38,8 @@ namespace CakeCapitalCheckout.Controllers
                         PaymentSession = paymentResult.Data,
                     };
 
-                    var merchantResult = await _xanoService.GetMerchantAsync(model.PaymentSession.MerchantId);
-
-                    if (merchantResult.IsSuccessful && merchantResult.Data != null)
-                    {
-                        model.Merchant = merchantResult.Data;
-                        HttpContext.Session.SetString(SESSION_KEY, id);
-
-                        return View(model);
-                    }
+                    HttpContext.Session.SetString(SESSION_KEY, id);
+                    return View(model);
                 }
 
                 return View("NotFound");
@@ -68,7 +67,7 @@ namespace CakeCapitalCheckout.Controllers
                     {
                         var paymentSession = paymentSessionResult.Data;
 
-                        var response = await _airwallexService.CreateIntentAsync(paymentSession.Amount, countryCode, ""); // paymentSession.SuccessUrl);
+                        var response = await _airwallexService.CreateIntentAsync(paymentSession, countryCode);
 
                         var model = new CheckoutViewModel()
                         {

@@ -8,7 +8,5 @@ namespace CakeCapitalCheckout.ViewModels
         public AirwallexPaymentIntent PaymentIntent { get; set; }
 
         public PaymentSession PaymentSession { get; set; }
-
-        public Merchant Merchant { get; set; }
     }
 }

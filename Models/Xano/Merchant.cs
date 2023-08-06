@@ -4,11 +4,12 @@ namespace CakeCapitalCheckout.Models.Xano
 {
     public class Merchant
     {
-        [JsonProperty("id")]
-        public int Id { get; set; }
 
-        [JsonProperty("title")]
-        public string Title { get; set; }
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("legal_name")]
+        public string LegalName { get; set; }
 
         [JsonProperty("logo")]
         public Image Logo { get; set;}

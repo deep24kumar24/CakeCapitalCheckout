@@ -17,7 +17,7 @@
                                 <path d="M40 22h-24.34l11.17-11.17-2.83-2.83-16 16 16 16 2.83-2.83-11.17-11.17h24.34v-4z" />
                             </svg>
                             <div>
-                                <Image alt="go back to Together" height={60} width={200} quality={100} src="@Model.Merchant.Logo.Url" />
+                                <Image alt="go back to Together" height={60} width={200} quality={100} src="@Model.PaymentSession.Merchant.Logo.Url" />
                             </div>
                         </div>
                     </a>
@@ -29,7 +29,7 @@
                     <div class="subtitle pb-5">Due July 21, 2023</div>
 
                     <div class="mt-5 pt-5">
-                        <div>From: @Model.Merchant.Title</div>
+                        <div>From: @Model.PaymentSession.Merchant.Name</div>
                         <div>Invoice# 7G754SLYD6</div>
                     </div>
                 </div>
@@ -45,8 +45,10 @@
                     <div class="mt-3 d-flex flex-column">
                         <label>Country</label>
                         <select id="country" class="cake-select">
-                            <option value="CAD" selected>Canada</option>
-                            <option value="USD">United States</option>
+                            @foreach(var country in Model.PaymentSession.Countries)
+                            {
+                                <!option value="@country.Currency" @(country.IsDefault ? "selected" : null)>@country.CountryName</!option>
+                            }
                         </select>
                     </div>
 

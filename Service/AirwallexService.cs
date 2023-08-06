@@ -1,4 +1,5 @@
 ﻿using CakeCapitalCheckout.Models.Airwallex;
+using CakeCapitalCheckout.Models.Xano;
 using RestSharp;
 using Sentry;
 
@@ -6,30 +7,41 @@ namespace CakeCapitalCheckout.Service
 {
     public interface IAirwallexService
     {
-        Task<AirwallexPaymentIntent> CreateIntentAsync(decimal amount, string countryCode, string returnUrl);
+        Task<AirwallexPaymentIntent> CreateIntentAsync(PaymentSession session, string countryCode);
+    }
+
+    public class AirwallexConfig
+    {
+        public string ApiKey { get; set; }
+        public string ClientId { get; set; }
+        public string GetTokenUrl { get; set; }
+        public string CreateIntentUrl { get; set; }
+
     }
 
     public class AirwallexService: IAirwallexService
     {
-        private readonly string API_KEY = "17fbc7b14e99dc74a3f1070c83b06a3c922cc687bbbf1f6ed77033cf6b3b333b0fe56812517201dbafd3af108a3188f8";
-        private readonly string CLIENT_ID = "fTJn6LvCQgGFham22cOmzA";
+        private readonly IConfiguration _configuration;
 
-        private readonly string TOKEN_URI = "https://api-demo.airwallex.com/api/v1/authentication/login";
-        private readonly string CREATE_INTENT_URI = "https://api-demo.airwallex.com/api/v1/pa/payment_intents/create";
+        public AirwallexService(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
 
-        public async Task<AirwallexPaymentIntent> CreateIntentAsync(decimal amount, string countryCode, string returnUrl)
+        public async Task<AirwallexPaymentIntent> CreateIntentAsync(PaymentSession session, string countryCode)
         {
             try
             {
-                var token = await GetToken();
+                var airwallexConfig = _configuration.GetSection("Airwallex").Get<AirwallexConfig>() ?? throw new Exception("Configuration Error.");
+                var token = await GetToken(airwallexConfig);
 
-                AirwallexCreateIntentRequestContract requestContract = new(amount,
+                AirwallexCreateIntentRequestContract requestContract = new(session.Amount,
                                                                             countryCode.ToUpper(),
-                                                                            Guid.NewGuid().ToString(),
+                                                                            session.OrderId,
                                                                             Guid.NewGuid(),
-                                                                            returnUrl);
+                                                                            session.SuccessUrl);
 
-                var client = new RestClient(CREATE_INTENT_URI);
+                var client = new RestClient(airwallexConfig.CreateIntentUrl);
                 var request = new RestRequest("", Method.Post);
                 request.AddHeader("Content-Type", "application/json");
                 request.AddHeader("Authorization", $"Bearer {token.Token}");
@@ -39,18 +51,26 @@ namespace CakeCapitalCheckout.Service
             catch (Exception ex)
             {
                 SentrySdk.CaptureException(ex);
-                return null;
+                throw ex;
             }
 
         }
 
-        private async Task<AirwallexToken> GetToken()
+        private async Task<AirwallexToken> GetToken(AirwallexConfig config)
         {
-            var client = new RestClient(TOKEN_URI);
-            var request = new RestRequest("", Method.Post);
-            request.AddHeader("x-api-key", API_KEY);
-            request.AddHeader("x-client-id", CLIENT_ID);
-            return await client.PostAsync<AirwallexToken>(request);
+            try
+            {
+                var client = new RestClient(config.GetTokenUrl);
+                var request = new RestRequest("", Method.Post);
+                request.AddHeader("x-api-key", config.ApiKey);
+                request.AddHeader("x-client-id", config.ClientId);
+                return await client.PostAsync<AirwallexToken>(request);
+            }
+            catch (Exception ex)
+            {
+                SentrySdk.CaptureException(ex);
+                throw ex;
+            }
         }
     }
 }

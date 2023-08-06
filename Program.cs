@@ -1,4 +1,5 @@
 using CakeCapitalCheckout.Service;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft;
 using Sentry;
 
@@ -8,7 +9,6 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 
 services.AddControllersWithViews();
-
 
 services.AddTransient<IAirwallexService, AirwallexService>();
 services.AddTransient<IXanoService, XanoService>();
