@@ -26,21 +26,19 @@
                 <div class="Summary">
                     <div class="Amount">$@Model.PaymentSession.Amount</div>
 
-                    <div class="subtitle pb-5">Due July 21, 2023</div>
-
                     <div class="mt-5 pt-5">
                         <div>From: @Model.PaymentSession.Merchant.Name</div>
-                        <div>Invoice# 7G754SLYD6</div>
+                        <div>Invoice# @Model.PaymentSession.OrderId</div>
                     </div>
                 </div>
             </div>
 
             <div class="Payment">
                 <div class="CheckoutForm pb-5">
-                    <div class="d-flex flex-column">
+                    @*<div class="d-flex flex-column">
                         <label>Email</label>
                         <input class="cake-input" />
-                    </div>
+                    </div>*@
 
                     <div class="mt-3 d-flex flex-column">
                         <label>Country</label>
