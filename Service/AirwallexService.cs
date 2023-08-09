@@ -14,12 +14,12 @@ namespace CakeCapitalCheckout.Service
     {
         public string ApiKey { get; set; }
         public string ClientId { get; set; }
-        public string GetTokenUrl { get; set; }
-        public string CreateIntentUrl { get; set; }
+        public string ApiUrl { get; set; }
 
+        public AirwallexPaymentEnvironment Env { get; set; }
     }
 
-    public class AirwallexService: IAirwallexService
+    public class AirwallexService : IAirwallexService
     {
         private readonly IConfiguration _configuration;
 
@@ -41,12 +41,15 @@ namespace CakeCapitalCheckout.Service
                                                                             Guid.NewGuid(),
                                                                             session.SuccessUrl);
 
-                var client = new RestClient(airwallexConfig.CreateIntentUrl);
-                var request = new RestRequest("", Method.Post);
+                var client = new RestClient(airwallexConfig.ApiUrl);
+                var request = new RestRequest("/pa/payment_intents/create", Method.Post);
                 request.AddHeader("Content-Type", "application/json");
                 request.AddHeader("Authorization", $"Bearer {token.Token}");
                 request.AddJsonBody(requestContract);
-                return await client.PostAsync<AirwallexPaymentIntent>(request);
+                var response = await client.PostAsync<AirwallexPaymentIntent>(request);
+                response.PaymentEnvironment = airwallexConfig.Env;
+
+                return response;
             }
             catch (Exception ex)
             {
@@ -60,8 +63,8 @@ namespace CakeCapitalCheckout.Service
         {
             try
             {
-                var client = new RestClient(config.GetTokenUrl);
-                var request = new RestRequest("", Method.Post);
+                var client = new RestClient(config.ApiUrl);
+                var request = new RestRequest("/authentication/login", Method.Post);
                 request.AddHeader("x-api-key", config.ApiKey);
                 request.AddHeader("x-client-id", config.ClientId);
                 return await client.PostAsync<AirwallexToken>(request);

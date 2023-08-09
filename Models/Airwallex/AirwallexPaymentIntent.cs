@@ -19,5 +19,15 @@ namespace CakeCapitalCheckout.Models.Airwallex
 
         [JsonPropertyName("available_payment_method_types")]
         public List<string> AvailablePaymentMethodTypes { get; set; }
+
+        [JsonIgnore]
+        public AirwallexPaymentEnvironment PaymentEnvironment { get; set; } = AirwallexPaymentEnvironment.demo;
+    }
+
+
+    public enum AirwallexPaymentEnvironment
+    {
+        demo,
+        prod
     }
 }

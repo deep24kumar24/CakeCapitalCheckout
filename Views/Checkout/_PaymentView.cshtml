@@ -69,16 +69,13 @@
 
 <script>
     try {
-        // STEP #2: Initialize the Airwallex global context for event communication
         Airwallex.init({
-            env: 'demo',
+            env: '@Model.PaymentIntent.PaymentEnvironment',
             origin: window.location.origin,
         });
 
-        // STEP #4: Create 'applepay' element
-        const applePayElement = Airwallex.createElement('applePayButton', {
 
-            // Required, Apple Pay uses intent Id and client_secret to prepare checkout
+        const applePayElement = Airwallex.createElement('applePayButton', {
             intent_id: '@Model.PaymentIntent.Id',
             client_secret: '@Model.PaymentIntent.ClientSecret',
             amount: {
