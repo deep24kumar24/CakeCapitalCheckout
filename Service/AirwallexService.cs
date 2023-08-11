@@ -1,5 +1,6 @@
 ﻿using CakeCapitalCheckout.Models.Airwallex;
 using CakeCapitalCheckout.Models.Xano;
+using Newtonsoft.Json;
 using RestSharp;
 using Sentry;
 
@@ -53,14 +54,24 @@ namespace CakeCapitalCheckout.Service
             }
             catch (Exception ex)
             {
+                SentrySdk.ConfigureScope(scope =>
+                {
+                    scope.SetExtra("PaymentSession", JsonConvert.SerializeObject(session));
+                    scope.SetExtra("CountryCode", countryCode);
+                });
+
                 SentrySdk.CaptureException(ex);
                 throw ex;
             }
 
         }
 
-        private async Task<AirwallexToken> GetToken(AirwallexConfig config)
+        private static async Task<AirwallexToken> GetToken(AirwallexConfig config)
         {
+            SentrySdk.ConfigureScope(scope =>
+            {
+                scope.SetExtra("AirwallexConfig", JsonConvert.SerializeObject(config));
+            });
             try
             {
                 var client = new RestClient(config.ApiUrl);
@@ -71,6 +82,7 @@ namespace CakeCapitalCheckout.Service
             }
             catch (Exception ex)
             {
+
                 SentrySdk.CaptureException(ex);
                 throw ex;
             }
