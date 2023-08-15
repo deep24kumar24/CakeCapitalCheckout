@@ -5,7 +5,7 @@ namespace CakeCapitalCheckout.Models.Xano
 {
     public class PaymentSession
     {
-        [JsonProperty("sessionId")]
+        [JsonProperty("session_id")]
         public Guid Id { get; set; }
 
         [JsonProperty("status")]

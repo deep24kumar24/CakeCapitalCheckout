@@ -15,6 +15,7 @@ namespace CakeCapitalCheckout.Controllers
             _configuration = configuration;
         }
 
+        [Route("/cakesession/createSession")]
         [HttpPost]
         public async Task<IActionResult> CreateSession([FromBody] CreatePaymentSessionRequestContract requestContract)
         {
@@ -50,19 +51,18 @@ namespace CakeCapitalCheckout.Controllers
             if (string.IsNullOrEmpty(requestContract.OrderId) || !requestContract.OrderId.Any())
                 return "Order Id is required.";
 
-            if (!isValidUrl(requestContract.SuccessUrl))
+            if (!IsValidUrl(requestContract.SuccessUrl))
                 return "Success Url must be a valid http or https url";
 
-            if (!isValidUrl(requestContract.CancelUrl))
+            if (!IsValidUrl(requestContract.CancelUrl))
                 return "Cancel Url must be a valid http or https url";
 
             return null;
         }
 
-        private static bool isValidUrl(string url)
+        private static bool IsValidUrl(string url)
         {
-            Uri uriResult;
-            return Uri.TryCreate(url, UriKind.Absolute, out uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+            return Uri.TryCreate(url, UriKind.Absolute, out Uri uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
         }
     }
 }

@@ -29,6 +29,12 @@ namespace CakeCapitalCheckout.Controllers
             try
             {
                 var paymentResult = await _xanoService.GetPaymentSessionAsync(id);
+
+                if (!paymentResult.IsSuccessStatusCode)
+                {
+                    throw new Exception("Xano Payment Session Failed with message:" + paymentResult.ErrorException.Message);
+                }
+
                 var paymentSession = paymentResult.Data;
 
                 if (paymentResult.IsSuccessful && paymentSession != null && paymentSession.Status == Models.Xano.PaymentSessionStatus.Created)
@@ -49,7 +55,6 @@ namespace CakeCapitalCheckout.Controllers
                 SentrySdk.CaptureException(ex);
                 return View("NotFound");
             }
-            
         }
 
         [HttpGet("payment-view")]
