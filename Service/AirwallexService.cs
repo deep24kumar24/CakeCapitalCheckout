@@ -40,7 +40,7 @@ namespace CakeCapitalCheckout.Service
                                                                             countryCode.ToUpper(),
                                                                             session.OrderId,
                                                                             Guid.NewGuid(),
-                                                                            session.SuccessUrl);
+                                                                            session.SuccessUrl, session.Merchant.DisplayName);
 
                 var client = new RestClient(airwallexConfig.ApiUrl);
                 var request = new RestRequest("/pa/payment_intents/create", Method.Post);

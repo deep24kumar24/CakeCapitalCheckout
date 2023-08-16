@@ -5,11 +5,11 @@
 
 <main>
     <div class="App-Container">
-        <div class="App-Background"></div>
+        <div class="App-Background" style="background-color: @Model.PaymentSession.Merchant.BgColor"></div>
 
         <div class="App">
             <div class="Overview">
-                <div class="Header">
+                <div class="Header" style="background-color: @Model.PaymentSession.Merchant.BgColor">
                     <a href="@Model.PaymentSession.CancelUrl">
                         <div class="HeaderContainer">
                             <svg height="20" viewBox="0 0 48 48" width="20" xmlns="http://www.w3.org/2000/svg">
@@ -19,11 +19,11 @@
                             <div>
                                 @if (Model.PaymentSession.Merchant.Logo != null)
                                 {
-                                    <Image alt="go back to @Model.PaymentSession.Merchant.Name" height={60} width={200} quality={100} src="@Model.PaymentSession.Merchant.Logo.Url" />
+                                    <Image alt="go back to @Model.PaymentSession.Merchant.DisplayName" height={60} width={200} quality={100} src="@Model.PaymentSession.Merchant.Logo.Url" />
                                 }
                                 else
                                 {
-                                    <div>@Model.PaymentSession.Merchant.Name</div>
+                                    <div>@Model.PaymentSession.Merchant.DisplayName</div>
                                 }
                             </div>
                         </div>
@@ -34,8 +34,8 @@
                     <div class="Amount">$@Model.PaymentSession.Amount</div>
 
                     <div class="mt-5 pt-5">
-                        <div>From: @Model.PaymentSession.Merchant.Name</div>
-                        <div>Invoice# @Model.PaymentSession.OrderId</div>
+                        <div>From: @Model.PaymentSession.Merchant.DisplayName</div>
+                        <div>Reference# @Model.PaymentSession.OrderId</div>
                     </div>
                 </div>
             </div>

@@ -11,6 +11,12 @@ namespace CakeCapitalCheckout.Models.Xano
         [JsonProperty("legal_name")]
         public string LegalName { get; set; }
 
+        [JsonProperty("display_name")]
+        public string DisplayName { get; set; }
+
+        [JsonProperty("bg_color")]
+        public string BgColor { get; set; }
+
         [JsonProperty("logo")]
         public Image Logo { get; set;}
         

@@ -19,13 +19,16 @@ namespace CakeCapitalCheckout.Models.Airwallex
         [JsonPropertyName("return_url")]
         public string ReturnUrl { get; init; }
 
-        public AirwallexCreateIntentRequestContract(decimal Amount, string Currency, string MerchantOrderId, Guid RequestId, string returnUrl)
+        public string Descriptor { get; init; }
+
+        public AirwallexCreateIntentRequestContract(decimal Amount, string Currency, string MerchantOrderId, Guid RequestId, string returnUrl, string descriptor)
         {
             this.Amount = Amount;
             this.Currency = Currency;
             this.MerchantOrderId = MerchantOrderId;
             this.RequestId = RequestId;
             ReturnUrl = returnUrl;
+            Descriptor = descriptor;
         }
     }
 }
